@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coders Meet</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        .header {
+            background-image: url('back1.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 24px;
+            text-decoration: none;
+            margin-right: auto; /* Pushes logo to the left */
+            margin-left: 20px; /* Adds some space between the logo and buttons */
+        }
+        
+        #register,
+        #login {
+            background-color: transparent;
+            border: none;
+            color: white;
+            margin-right: 20px; /* Adds space between buttons */
+            cursor: pointer;
+        }
+        
+        .buttons button {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .buttons button:hover {
+            background-color: white;
+            color: black;
+        }
+        
+        .main-content {
+            text-align: center;
+            margin-top: 100px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Loader animation */
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #007bff; /* Blue */
+            border-radius: 70%;
+            width: 60px;
+            height: 60px;
+            animation: spin 0.5s linear infinite; 
+        }
+
+        /* Spin animation keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <header class="header">
+        <div class="background-overlay"></div>
+        <nav class="navbar">
+            <a href="#" class="logo">Coders-Meet</a>
+            <button id="register" onclick="redirectToRegistrationPage()">Register</button>
+            <button id="login" onclick= "redirectToLoginPage()">Login</button>
+        </nav>
+
+        <div class="main-content">
+            <h1>Coder Meet</h1>
+            <p>  Get help from other developers</p>
+
+            <div class="buttons">
+                <button id="signUp" onclick="redirectToRegistrationPage()">Sign Up</button>
+                <button id="loginMain" onclick="redirectToLoginPage()">Login</button>
+            </div> 
+        </div> 
+    </header>
+    <script>
+        function redirectToLoginPage() {
+            window.location.href = "login.html"; // Redirect to login.html
+        }
+        function redirectToRegistrationPage() {
+            window.location.href = "register.html"; // Redirect to registration.html
+        }
+
+        // Wait for 4 seconds before hiding the loader and opening the page
+        setTimeout(() => {
+            const loaderContainer = document.querySelector('.loader-container');
+            loaderContainer.style.display = 'none'; 
+        }, 500); 
+    </script>
+    
+</body>
+</html>

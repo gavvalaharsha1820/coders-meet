@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    
+        button:hover {
+            background-color: #0056b3;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 24px;
+            text-decoration: none;
+            color: white;
+        }
+        /* button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        } */
+        .profile {
+            /* Remove this line */
+            display: flex;
+            align-items: center;
+            background-color: white;
+            margin: 10px;
+            
+            
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        .details {
+            flex: 1;
+        }
+        .skills {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Responsive adjustments */
+        @media only screen and (max-width: 600px) {
+            .profile {
+                flex-direction: column;
+                padding: 15px;
+            }
+            .avatar {
+                margin-bottom: 10px;
+            }
+            .details {
+                text-align: center;
+            }
+            button {
+                margin-top: 10px;
+            }
+        }
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Loader animation */
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #007bff; /* Blue */
+            border-radius: 70%;
+            width: 60px;
+            height: 60px;
+            animation: spin 0.5s linear infinite; 
+        }
+
+        /* Spin animation keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .review-form {
+            align-items: center;
+            background-color: white;
+            margin: 10px;
+            
+        }
+        .review-form textarea,
+        .review-form input[type="number"] {
+            display: block;
+            width: 50%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .review-form button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .hel{
+            display: flex;
+            border:2px  solid white;
+            flex-direction: column;
+            justify-content: center;
+            background-color: whitesmoke;
+        }
+        a{
+            text-decoration: none;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <header>
+        <nav>
+            <a href="./dashboard.html" class="logo">Coders-Meet</a>
+            <div>
+                <button id="logoutButton" onclick="redirectindexPage()">Logout</button>
+                <button id="myProfileButton" onclick="redirectmyprofilePage()">My Profile</button>
+
+            </div>
+        </nav>
+    </header>
+<div class="hel">
+    <div class="profile" id="profileContainer">
+        <!-- Profile details will be populated here -->
+    </div>
+    <div class="review-form">
+        <h2>Enter Rating</h2>
+        <input type="number" placeholder="Enter your rating out of 5" min="1" max="5">
+        <button>Add Rating</button>
+    </div>
+    </div>
+    
+
+    <script>
+        window.onload = async function() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const profileId = urlParams.get('id');
+                if (!profileId) {
+                    console.error('Profile ID is missing');
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:5000/profiles/${profileId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+                const profile = await response.json();
+
+                const profileContainer = document.getElementById('profileContainer');
+                const profileDiv = document.createElement('div');
+                profileDiv.classList.add('profile');
+
+                const avatarImg = document.createElement('img');
+                avatarImg.classList.add('avatar');
+                avatarImg.src = 'avatar-placeholder.jpg'; // Set the source to the avatar URL from the profile data
+                avatarImg.alt = 'Avatar';
+
+                const detailsDiv = document.createElement('div');
+                detailsDiv.classList.add('details');
+
+                const fullname = document.createElement('h2');
+                fullname.textContent = `Name: ${profile.fullname}`;
+
+                const emailPara = document.createElement('p');
+                emailPara.innerHTML = `Email: <a href="mailto:${profile.email}">${profile.email}</a>`;
+                const phonePara = document.createElement('p');
+                phonePara.innerHTML = `Phone: <a href="tel:${profile.mobile}">${profile.mobile}</a>`;
+                const skillsHeading = document.createElement('h3'); // Create a new heading for skills
+                skillsHeading.textContent = 'Skills:';
+                const skillsList = document.createElement('ul');
+                skillsList.classList.add('skills');
+
+                if (Array.isArray(profile.skills)) {
+                    profile.skills.forEach(skill => {
+                        const skillItem = document.createElement('li');
+                        skillItem.textContent = skill;
+                        skillsList.appendChild(skillItem);
+                    });
+                } else {
+                    const skillItem = document.createElement('li');
+                    skillItem.textContent = profile.skills;
+                    skillsList.appendChild(skillItem);
+                }
+
+                detailsDiv.appendChild(fullname);
+                detailsDiv.appendChild(emailPara);
+                detailsDiv.appendChild(phonePara);
+                detailsDiv.appendChild(skillsHeading);
+                detailsDiv.appendChild(skillsList);
+
+                profileDiv.appendChild(avatarImg); 
+                profileDiv.appendChild(detailsDiv);
+
+                profileContainer.appendChild(profileDiv);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        };
+        
+        function redirectindexPage() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+        
+        function redirectmyprofilePage() {
+            window.location.href = 'myprofiles.html';
+        }
+        
+        
+        setTimeout(() => {
+            const loaderContainer = document.querySelector('.loader-container');
+            loaderContainer.style.display = 'none'; 
+        }, 500); 
+
+        const addRatingButton = document.querySelector('.review-form button');
+        addRatingButton.addEventListener('click', async () => {
+            try {
+                // Get the rating value from the input field
+                const ratingInput = document.querySelector('.review-form input[type="number"]');
+                const rating = ratingInput.value;
+        
+                // Check if the rating is within the valid range (1-5)
+                if (rating < 1 || rating > 5) {
+                    alert('Rating must be between 1 and 5');
+                    return;
+                }
+        
+                // Get the profileId from the URL query parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const profileId = urlParams.get('id');
+                if (!profileId) {
+                    throw new Error('Profile ID is missing');
+                }
+        
+                // Prepare the data to be sent in the POST request
+                const data = {
+                    taskworker: profileId,
+                    rating: rating
+                };
+        
+                // Send a POST request to add the rating
+                const response = await fetch('http://localhost:5000/addreview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-token': `${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(data)
+                });
+        
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error('Failed to add rating');
+                }
+        
+                // Reset the input field
+                ratingInput.value = '';
+        
+                // Display a success message to the user
+                alert('Rating added successfully');
+            } catch (error) {
+                console.error('Error adding rating:', error);
+                alert('Failed to add rating. Please try again.');
+            }
+        });
+        
+    </script>
+
+</body>
+</html>

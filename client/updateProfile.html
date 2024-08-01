@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Profile</title>
+</head>
+<body>
+    <h1>Update Profile</h1>
+
+    <form id="updateProfileForm">
+        <label for="fullname">Full Name:</label>
+        <input type="text" id="fullname" name="fullname" required><br>
+        
+        <label for="mobile">Mobile:</label>
+        <input type="text" id="mobile" name="mobile" required><br>
+        
+        <label for="skills">Skills:</label>
+        <input type="text" id="skills" name="skills" required><br>
+        
+        <button type="submit">Update Profile</button>
+    </form>
+
+    <script>
+        // Function to update profile
+        const updateProfile = async (formData) => {
+            try {
+                const response = await fetch('http://localhost:5000/updateprofile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-token': localStorage.getItem('token') // Assuming token is stored in localStorage
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Profile updated successfully!');
+                    // Redirect or perform any other action after successful update
+                } else {
+                    alert('Failed to update profile. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
+            }
+        };
+
+        // Form submission handler
+        document.getElementById('updateProfileForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = {
+                fullname: document.getElementById('fullname').value,
+                mobile: document.getElementById('mobile').value,
+                skills: document.getElementById('skills').value
+            };
+
+            updateProfile(formData);
+        });
+    </script>
+</body>
+</html>

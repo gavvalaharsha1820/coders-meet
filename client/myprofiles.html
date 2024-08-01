@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+    
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+    
+        .logo {
+            font-size: 24px;
+            text-decoration: none;
+            color: white;
+        }
+    
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    
+        button:hover {
+            background-color: #0056b3;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info p {
+            margin: 10px 0;
+        }
+        .profile-info label {
+            font-weight: bold;
+        }
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Loader animation */
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #007bff; /* Blue */
+            border-radius: 70%;
+            width: 60px;
+            height: 60px;
+            animation: spin 0.5s linear infinite; 
+        }
+
+        /* Spin animation keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <header>
+        <nav>
+            <a href="./dashboard.html" class="logo">Coders-Meet</a>
+            <h1>My Profile</h1>
+            <div>
+                <button id="logoutButton"  onclick="redirectindexPage()">Logout</button>
+                <button id="editProfileButton" onclick="redirectEditProfilePage()">Edit Profile</button> 
+
+             
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="profile-info">
+            <label for="fullname">Full Name:</label>
+            <p id="fullname"></p>
+        </div>
+        <div class="profile-info">
+            <label for="email">Email:</label>
+            <p id="email"></p>
+        </div>
+        <div class="profile-info">
+            <label for="mobile">Mobile:</label>
+            <p id="mobile"></p>
+        </div>
+        <div class="profile-info">
+            <label for="skills">Skills:</label>
+            <ul id="skills"></ul>
+        </div>
+        <div class="profile-info">
+            <label for="ratings">Ratings:</label>
+            <ul id="reviews"></ul> <!-- Changed to unordered list -->
+        </div>
+        
+        <button id="deleteProfileButton" onclick="deleteProfile()">Delete Profile</button>
+    </div>
+
+    <script>
+        window.onload = async function() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('JWT token is missing');
+                    return;
+                }
+        
+                // Fetch profile data from the server
+                const response = await fetch('http://localhost:5000/myprofiles', {
+                    headers: {
+                        'x-token': localStorage.getItem('token')
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+                const profile = await response.json();
+        
+                // Update profile information on the page
+                document.getElementById('fullname').textContent = profile.fullname;
+                document.getElementById('email').textContent = profile.email;
+                document.getElementById('mobile').textContent = profile.mobile;
+                document.getElementById('skills').textContent = profile.skills;
+        
+                // Fetch reviews for the user
+                const reviewsResponse = await fetch('http://localhost:5000/myreviews', {
+                    headers: {
+                        'x-token': localStorage.getItem('token')
+                    }
+                });
+                if (!reviewsResponse.ok) {
+                    throw new Error('Failed to fetch reviews');
+                }
+                const reviews = await reviewsResponse.json();
+        
+                // Display reviews on the page
+                const reviewsContainer = document.getElementById('reviews');
+                reviews.forEach(review => {
+                    const reviewItem = document.createElement('li');
+                    reviewItem.textContent = `Rating: ${review.rating} by ${review.taskprovider}`;
+                    reviewsContainer.appendChild(reviewItem);
+                });
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                // Handle error
+            }
+            
+            // Hide loader after loading is complete
+            const loaderContainer = document.querySelector('.loader-container');
+            loaderContainer.style.display = 'none'; 
+        };
+        
+        function deleteProfile() {
+            if (confirm('Are you sure you want to delete your profile? This action cannot be undone.')) {
+                // Perform delete request to server
+                fetch('http://localhost:5000/deleteprofile', {
+                    method: 'DELETE',
+                    headers: {
+                        'x-token': localStorage.getItem('token')
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete profile');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Handle successful deletion
+                    alert('Profile deleted successfully');
+                    // Redirect to login page or homepage
+                    window.location.href = 'login.html';
+                })
+                .catch(error => {
+                    console.error('Error deleting profile:', error);
+                    // Handle error
+                });
+            }
+        }
+        function redirectindexPage() {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+        function redirectEditProfilePage() {
+            localStorage.removeItem('token');
+            window.location.href = 'updateProfile.html';
+        }
+    </script>
+    
+</body>
+</html>
