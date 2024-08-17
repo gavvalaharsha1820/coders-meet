@@ -11,7 +11,7 @@ const cors = require('cors');
 app.use(express.json());
 app.use(cors({origin:'*'}));
 
-mongoose.connect('mongodb+srv://gavvalaharshavardhansai:harsha1820@cluster0.s3vupod.mongodb.net/')
+mongoose.connect('mongodb+srv://gavvalaharshavardhansai:@cluster0.s3vupod.mongodb.net/')
     .then(() => console.log('DB connected'))
     .catch(err => console.error('Error connecting to DB:', err));
 
